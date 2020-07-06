@@ -46,5 +46,6 @@
     "@rails/activestorage": "^6.0.0",
     "stimulus": "^1.1.1",
     "dropzone": "^5.5.1"
-  }
+  },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
 }
