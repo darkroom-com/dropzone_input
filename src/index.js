@@ -1,10 +1,10 @@
 import { Controller } from "stimulus";
-import { DirectUpload } from "activestorage";
+import { DirectUpload } from "@rails/activestorage";
 import Dropzone from "dropzone";
 
 Dropzone.autoDiscover = false;
 
-export default class extends Controller {
+class DropzoneController extends Controller {
   static targets = ["input"];
 
   connect() {
@@ -23,7 +23,7 @@ export default class extends Controller {
 
   hideFileInput() {
     this.inputTarget.disabled = true;
-    this.inputTarget.classList.add("hide");
+    this.inputTarget.classList.add("hidden");
   }
 
   bindEvents() {
@@ -172,3 +172,5 @@ class DirectUploadController {
     this.controller.dropzone.emit("complete", this.file);
   }
 }
+
+export default DropzoneController;

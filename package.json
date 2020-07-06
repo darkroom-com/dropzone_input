@@ -1,47 +1,50 @@
 {
-  "name": "@darkroom/stimulus-dropzone-controller",
+  "name": "@darkroom/dropzone-input",
   "version": "0.0.1",
   "description": "A stimulus.js based controller to add dropzone support to Rails forms",
-  "main": "lib/dropzone-controller.js",
-  "module": "src/dropzone-controller.js",
-  "directories": {
-    "lib": "lib"
-  },
+  "main": "dist/index.js",
+  "umd:main": "dist/index.umd.js",
+  "module": "dist/index.m.js",
+  "external": "stimulus, dropzone, @rails/activestorage",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "rollup -wc",
     "build": "npm run lint && npm run build:clean && npm run build:babel",
-    "build:clean": "rm -rf ./lib",
-    "build:babel": "mkdir -p lib && babel ./src -d ./lib",
+    "build:clean": "rm -rf ./dist",
+    "build:babel": "mkdir -p dist && rollup -c",
     "prepublishOnly": "npm run build",
     "lint": "eslint src/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/darkroom-com/stimulus-dropzone-controller.git"
+    "url": "git+https://github.com/darkroom-com/dropzone_input.git"
   },
   "author": "Trae Robrock <trobrock@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/darkroom-com/stimulus-dropzone-controller/issues"
+    "url": "https://github.com/darkroom-com/dropzone_input/issues"
   },
-  "homepage": "https://github.com/darkroom-com/stimulus-dropzone-controller#readme",
+  "homepage": "https://github.com/darkroom-com/dropzone_input#readme",
   "devDependencies": {
     "@babel/cli": "^7.10.4",
     "@babel/core": "^7.10.4",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-transform-classes": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
     "@babel/register": "^7.10.4",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.4.0"
-  },
-  "dependencies": {
     "@rails/activestorage": "^6.0.0",
+    "babel-eslint": "^10.1.0",
+    "dropzone": "^5.7.1",
+    "eslint": "^7.4.0",
+    "rollup": "^2.19.0",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-filesize": "^9.0.2",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "stimulus": "^1.1.1"
   },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env"
-      ]
-    ]
+  "peerDependencies": {
+    "@rails/activestorage": "^6.0.0",
+    "stimulus": "^1.1.1",
+    "dropzone": "^5.5.1"
   }
 }
