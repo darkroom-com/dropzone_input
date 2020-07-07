@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2020-07-07
+### Added
+- Publishing to Rubygems
+
 ## [0.0.1] - 2020-07-07
 ### Added
 - Initial Project, so... everything.
