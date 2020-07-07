@@ -9,6 +9,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.7
+    - name: Configure Rubygems Credentials
+      run: |
+        mkdir ~/.gem
+        cat << EOF > ~/.gem/credentials
+        ---
+        rubygems_api_key: ${{ secrets.RUBYGEMS_AUTH_TOKEN }}
+        EOF
+        chmod 0600 ~/.gem/credentials
+    - run: gem build dropzone_input.gemspec
+    - run: "gem push *.gem"
+
+    # Publish to NPM
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
