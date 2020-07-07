@@ -22,6 +22,10 @@ jobs:
         EOF
         chmod 0600 ~/.gem/credentials
     - run: gem build dropzone_input.gemspec
+    - uses: actions/upload-artifact@v2
+      with:
+        name: gem
+        path: *.gem
     - run: "gem push *.gem"
 
     # Publish to NPM
@@ -31,6 +35,11 @@ jobs:
         registry-url: https://registry.npmjs.org/
         scope: '@darkroom-com'
     - run: npm install
+    - run: npm pack
+    - uses: actions/upload-artifact@v2
+      with:
+        name: npm
+        path: *.tgz
     - run: npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
