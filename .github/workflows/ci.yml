@@ -15,4 +15,5 @@ jobs:
       run: |
         NPM_VERSION=$(cat package.json | jq -r '.version')
         GEM_VERSION=$(cat lib/dropzone_input/version.rb | awk '/VERSION/{ print $3 }' | tr -d "'")
+        echo "npm version: $NPM_VERSION, rubygems version: $GEM_VERSION"
         test $NPM_VERSION == $GEM_VERSION
