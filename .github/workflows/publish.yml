@@ -25,7 +25,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: gem
-        path: *.gem
+        path: "*.gem"
     - run: "gem push *.gem"
 
     # Publish to NPM
@@ -39,7 +39,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: npm
-        path: *.tgz
+        path: "*.tgz"
     - run: npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
