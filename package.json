@@ -1,6 +1,6 @@
 {
   "name": "@darkroom-com/dropzone-input",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A stimulus.js based controller to add dropzone support to Rails forms",
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",

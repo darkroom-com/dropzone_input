@@ -1,0 +1,7 @@
+Gemfile*
+README.md
+Rakefile
+app
+*.gemspec
+*.gem
+lib
