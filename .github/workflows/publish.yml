@@ -10,6 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    # Build Rubygems
     - uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.7
@@ -24,9 +25,8 @@ jobs:
       with:
         name: gem
         path: "*.gem"
-    - run: "gem push *.gem"
 
-    # Publish to NPM
+    # Build NPM
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
@@ -38,6 +38,9 @@ jobs:
       with:
         name: npm
         path: "*.tgz"
+
+    # Publish to Rubygems and NPM
+    - run: "gem push *.gem"
     - run: npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
