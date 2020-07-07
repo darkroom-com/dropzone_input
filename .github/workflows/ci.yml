@@ -39,7 +39,7 @@ jobs:
       id: published-release
       run: |
         ID=$(curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          https://api.github.com/repos/darkroom-com/dropzone_input/releases | jq '.[] | select(.tag_name == "v${{ steps.version.outputs.version }}" and not .draft) | .id')
+          https://api.github.com/repos/darkroom-com/dropzone_input/releases | jq '.[] | select(.tag_name == "v${{ steps.version.outputs.version }}" and .draft == false) | .id')
         echo "::set-output name=id::$ID"
     - name: Check if draft release exists
       id: release
