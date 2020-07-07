@@ -39,7 +39,7 @@ jobs:
       id: release
       run: |
         ID=$(curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          https://api.github.com/repos/darkroom-com/dropzone_input/releases | jq '.[] | select(.tag_name == "v${{ steps.version.outputs.version }}") | .id')
+          https://api.github.com/repos/darkroom-com/dropzone_input/releases | jq '.[] | select(.tag_name == "v${{ steps.version.outputs.version }}" and .draft) | .id')
         echo "::set-output name=id::$ID"
     - name: Delete previous release
       if: steps.release.outputs.id
