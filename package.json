@@ -1,5 +1,5 @@
 {
-  "name": "@darkroom/dropzone-input",
+  "name": "@darkroom-com/dropzone-input",
   "version": "0.0.1",
   "description": "A stimulus.js based controller to add dropzone support to Rails forms",
   "main": "dist/index.js",
@@ -47,5 +47,7 @@
     "stimulus": "^1.1.1",
     "dropzone": "^5.5.1"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
 }
