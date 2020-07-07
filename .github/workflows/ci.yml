@@ -35,6 +35,18 @@ jobs:
       run: |
         VERSION=$(cat package.json | jq -r '.version')
         echo "::set-output name=version::$VERSION"
+    - name: Check if release exists
+      id: release
+      run: |
+        ID=$(curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          https://api.github.com/repos/darkroom-com/dropzone_input/releases | jq '.[] | select(.tag_name == "v${{ steps.version.outputs.version }}") | .id')
+        echo "::set-output name=id::$ID"
+    - name: Delete previous release
+      if: steps.release.outputs.id
+      run: |
+        curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          -X DELETE
+          https://api.github.com/repos/darkroom-com/dropzone_input/releases/${{ steps.release.outputs.id }}
     - name: Get version changes
       run: |
         awk -v version='[${{ steps.version.outputs.version }}]' '/^## / {printit = $2 == version}; printit;' CHANGELOG.md > RELEASE_CHANGELOG.md
@@ -42,7 +54,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.version.outputs.version }}
+        tag_name: v${{ steps.version.outputs.version }}
         release_name: Release ${{ steps.version.outputs.version }}
         body_path: RELEASE_CHANGELOG.md
         draft: true
