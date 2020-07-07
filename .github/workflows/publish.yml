@@ -14,13 +14,11 @@ jobs:
       with:
         ruby-version: 2.7
     - name: Configure Rubygems Credentials
-      env:
-        RUBYGEMS_AUTH_TOKEN: secrets.RUBYGEMS_AUTH_TOKEN
       run: |
         mkdir $HOME/.gem
         touch $HOME/.gem/credentials
         chmod 0600 $HOME/.gem/credentials
-        printf -- "---\n:rubygems_api_key: ${RUBYGEMS_AUTH_TOKEN}\n" > $HOME/.gem/credentials
+        printf -- "---\n:rubygems_api_key: \"${{ secrets.RUBYGEMS_AUTH_TOKEN }}\"\n" > $HOME/.gem/credentials
     - run: gem build dropzone_input.gemspec
     - uses: actions/upload-artifact@v2
       with:
