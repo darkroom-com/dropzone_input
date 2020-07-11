@@ -54,11 +54,11 @@ jobs:
           -X DELETE \
           https://api.github.com/repos/darkroom-com/dropzone_input/releases/${{ steps.release.outputs.id }}
     - name: Get version changes
-      if: steps.published-release.outputs.id != 0
+      if: ${{ ! steps.published-release.outputs.id }}
       run: |
         awk -v version='[${{ steps.version.outputs.version }}]' '/^## / {printit = $2 == version}; printit;' CHANGELOG.md > RELEASE_CHANGELOG.md
     - uses: actions/create-release@v1
-      if: steps.published-release.outputs.id != 0
+      if: ${{ ! steps.published-release.outputs.id }}
       env:
         GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
       with:
