@@ -17,7 +17,9 @@ module DropzoneInput
       end
 
       content_tag :div, options.merge(class: class_list, data: data) do
-        render partial: 'dropzone_input/dropzone', locals: { form: form, field: field }
+        render 'dropzone_input/dropzone', form: form, field: field do
+          block_given? ? yield : render('dropzone_input/default_content')
+        end
       end
     end
   end

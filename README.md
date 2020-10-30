@@ -16,7 +16,7 @@ time and *pull requests are welcome* and will be reviewed quickly.
 
 ## Installation
 
-Add to your Gemfile
+Add to your Gemfile.
 
 ```ruby
 gem 'dropzone_input'
@@ -24,8 +24,21 @@ gem 'dropzone_input'
 
 ```sh
 bundle install
+```
+
+Add Javascript dependencies.
+
+```
 yarn add dropzone # If you don't already have this
 yarn add @darkroom-com/dropzone-input
+```
+
+Register Stimulus controller. By default in Rails, this is in `controllers/index.js`.
+
+```js
+import DropzoneController from '@darkroom-com/dropzone-input';
+
+application.register('dropzone', DropzoneController);
 ```
 
 ## Development
@@ -45,7 +58,7 @@ yarn link
 In your app project run
 
 ```sh
-yarn add @darkroom-com/dropzone-input
+yarn link @darkroom-com/dropzone-input
 ```
 
 To auto-recompile this project, run

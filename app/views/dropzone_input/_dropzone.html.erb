@@ -1,12 +1,4 @@
 <%= form.file_field field, direct_upload: true, data: { target: 'dropzone.input' } %>
 <div class="dz-default dz-message">
-  <?xml version="1.0" encoding="UTF-8"?>
-  <svg enable-background="new 0 0 72 43.2" version="1.1" viewBox="0 0 72 43.2" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" class="inline-block w-16 mb-1">
-    <style type="text/css">
-.st0{fill:none;stroke:#424443;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-    </style>
-    <polyline class="st0" points="28.3 26.3 34.4 20.3 40.4 26.3 34.4 20.3 34.4 42.3"/>
-    <path class="st0" d="m22.1 33c-6.6 0-11.9-5.3-11.9-11.9s5.4-11.9 11.9-11.9c2.4-4.9 7.4-8.3 13.3-8.3 7.6 0 13.9 5.8 14.7 13.2 0.7-0.1 1.3-0.2 2-0.2 5.3 0 9.5 4.3 9.5 9.5s-4.1 9.6-9.4 9.6h-5.6"/>
-  </svg>
-  <h1 class="text-xl text-gray-700">Upload</h1>
+  <%= yield %>
 </div>
