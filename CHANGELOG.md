@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2020-10-30
+- Add ability to customize HTML rendered in Dropzone.
+
 ## [0.0.2] - 2020-07-07
 ### Added
 - Publishing to Rubygems
