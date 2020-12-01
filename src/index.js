@@ -19,6 +19,7 @@ class DropzoneController extends Controller {
 
     this.hideFileInput();
     this.bindEvents();
+    this.bindFileDrop();
   }
 
   hideFileInput() {
@@ -40,6 +41,14 @@ class DropzoneController extends Controller {
     );
     this.dropzone.on("success", file => this.handleFileSuccess(file));
     this.dropzone.on("queuecomplete", () => this.handleQueueComplete());
+    this.dropzone.on("drop", event => this.handleFileDropped(event));
+  }
+
+  handleFileDropped(event) {
+    if (this.fileDropEvent) {
+      const newEvent = new CustomEvent(this.fileDropEvent);
+      window.dispatchEvent(newEvent);
+    }
   }
 
   handleFileSuccess(file) {
@@ -65,6 +74,48 @@ class DropzoneController extends Controller {
     }
   }
 
+  handleFileDropDragEnter() {
+    if (this.fileDropOver) {
+      this.fileDropOver.classList.remove("hidden");
+    }
+  }
+
+  handleFileDropDragLeave() {
+    if (this.fileDropOver) {
+      this.fileDropOver.classList.add("hidden");
+    }
+  }
+
+  bindFileDrop() {
+    this.dragCounter = 0;
+
+    if (this.fileDropId) {
+      const fileDrop = document.getElementById(this.fileDropId);
+      fileDrop.addEventListener("dragover", e => e.preventDefault());
+      fileDrop.addEventListener("dragenter", e => {
+        e.preventDefault();
+        if (this.dragCounter === 0) {
+          this.handleFileDropDragEnter();
+        }
+        this.dragCounter++;
+      });
+      fileDrop.addEventListener("dragleave", e => {
+        this.dragCounter--;
+        if (this.dragCounter === 0) {
+          this.handleFileDropDragLeave();
+        }
+      });
+      fileDrop.addEventListener("drop", e => {
+        e.preventDefault();
+        if (e.dataTransfer && e.dataTransfer.files.length) {
+          this.dropzone.drop({ dataTransfer: e.dataTransfer });
+        }
+      });
+
+      this.fileDropOver = document.getElementById(this.fileDropOverId);
+    }
+  }
+
   get headers() {
     return {
       "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
@@ -87,12 +138,24 @@ class DropzoneController extends Controller {
     return this.data.get("max-file-size") || null;
   }
 
+  get fileDropEvent() {
+    return this.data.get("file-drop-event");
+  }
+
   get fileSuccessEvent() {
     return this.data.get("file-success-event");
   }
 
   get queueCompleteEvent() {
     return this.data.get("queue-complete-event");
+  }
+
+  get fileDropId() {
+    return this.data.get("file-drop-id") || null;
+  }
+
+  get fileDropOverId() {
+    return this.data.get("file-drop-over-id") || null;
   }
 }
 
