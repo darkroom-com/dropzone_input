@@ -86,6 +86,11 @@ class DropzoneController extends Controller {
     }
   }
 
+  resetDragCounter() {
+    this.dragCounter = 0;
+    this.handleFileDropDragLeave();
+  }
+
   bindFileDrop() {
     this.dragCounter = 0;
 
@@ -110,6 +115,7 @@ class DropzoneController extends Controller {
         if (e.dataTransfer && e.dataTransfer.files.length) {
           this.dropzone.drop({ dataTransfer: e.dataTransfer });
         }
+        this.resetDragCounter();
       });
 
       this.fileDropOver = document.getElementById(this.fileDropOverId);
