@@ -46,7 +46,9 @@ class DropzoneController extends Controller {
 
   handleFileDropped(event) {
     if (this.fileDropEvent) {
-      const newEvent = new CustomEvent(this.fileDropEvent);
+      const newEvent = new CustomEvent(this.fileDropEvent, {
+        dataTransfer: event
+      });
       window.dispatchEvent(newEvent);
     }
   }
@@ -104,7 +106,7 @@ class DropzoneController extends Controller {
         }
         this.dragCounter++;
       });
-      fileDrop.addEventListener("dragleave", e => {
+      fileDrop.addEventListener("dragleave", () => {
         this.dragCounter--;
         if (this.dragCounter === 0) {
           this.handleFileDropDragLeave();
