@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6] - 2021-01-12
+- Update Stimulus to v2.0.0
+
 ## [0.0.5] - 2020-12-08
 - Fix 0.0.4
 
