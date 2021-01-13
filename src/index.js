@@ -14,7 +14,8 @@ class DropzoneController extends Controller {
       acceptedFiles: this.acceptedFiles,
       maxFiles: this.maxFiles,
       maxFilesize: this.maxFileSize,
-      autoQueue: false
+      autoQueue: false,
+      parallelUploads: 2
     });
 
     this.hideFileInput();
@@ -42,6 +43,10 @@ class DropzoneController extends Controller {
     this.dropzone.on("success", file => this.handleFileSuccess(file));
     this.dropzone.on("queuecomplete", () => this.handleQueueComplete());
     this.dropzone.on("drop", event => this.handleFileDropped(event));
+    this.dropzone.on(
+      "uploadprogress",
+      (file, progress) => this.handleFileProgress(file, progress)
+    );
   }
 
   handleFileDropped(event) {
@@ -57,6 +62,15 @@ class DropzoneController extends Controller {
     if (this.fileSuccessEvent) {
       const event = new CustomEvent(this.fileSuccessEvent, {
         detail: { file: file }
+      });
+      window.dispatchEvent(event);
+    }
+  }
+
+  handleFileProgress(file, progress) {
+    if (this.fileProgressEvent) {
+      const event = new CustomEvent(this.fileProgressEvent, {
+        detail: { file: file, progress: progress }
       });
       window.dispatchEvent(event);
     }
@@ -154,6 +168,10 @@ class DropzoneController extends Controller {
     return this.data.get("file-success-event");
   }
 
+  get fileProgressEvent() {
+    return this.data.get("file-progress-event");
+  }
+
   get queueCompleteEvent() {
     return this.data.get("queue-complete-event");
   }
@@ -196,13 +214,14 @@ class DirectUploadController {
 
   bindProgressEvent(xhr) {
     this.xhr = xhr;
-    this.xhr.upload.addEventListener("progress", event =>
-      this.uploadRequestDidProgress(event)
-    );
+    this.xhr.upload.addEventListener("progress", event => {
+      const progress = parseFloat(event.loaded / event.total) * 100;
+      this.emitDropzoneProgress(progress);
+      this.uploadRequestDidProgress(progress);
+    });
   }
 
-  uploadRequestDidProgress(event) {
-    const progress = (event.loaded / event.total) * 100;
+  uploadRequestDidProgress(progress) {
     this.file.previewTemplate.querySelector(
       ".dz-upload"
     ).style.width = `${progress}%`;
@@ -229,6 +248,10 @@ class DirectUploadController {
   emitDropzoneUploading() {
     this.file.status = Dropzone.UPLOADING;
     this.controller.dropzone.emit("processing", this.file);
+  }
+
+  emitDropzoneProgress(progress) {
+    this.controller.dropzone.emit("uploadprogress", this.file, progress);
   }
 
   emitDropzoneSuccess() {

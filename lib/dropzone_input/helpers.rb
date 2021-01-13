@@ -12,7 +12,16 @@ module DropzoneInput
         controller: 'dropzone',
         dropzone_accepted_files: ActiveStorage.variable_content_types.join(',')
       }
-      %i( max_files max_file_size file_drop_event file_success_event queue_complete_event file_drop_id file_drop_over_id ).each do |key|
+      %i(
+        max_files
+        max_file_size
+        file_drop_event
+        file_progress_event
+        file_success_event
+        queue_complete_event
+        file_drop_id
+        file_drop_over_id
+      ).each do |key|
         data["dropzone_#{key}".to_sym] = options.delete(key) if options.key?(key)
       end
 

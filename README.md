@@ -6,6 +6,7 @@ A Rails helper and Stimulus Controller that makes adding dropzone to a Rails for
 <%= form_with(model: User.new) do |form| %>
   <%= dropzone form, :image,
     file_success_event: 'USER_FILE_UPLOADED',
+    file_progress_event: 'USER_FILE_PROGRESS',
     queue_complete_event: 'USER_FILE_UPLOAD_DONE' %>
 <% end %>
 ```
