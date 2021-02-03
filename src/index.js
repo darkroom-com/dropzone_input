@@ -30,7 +30,7 @@ class DropzoneController extends Controller {
 
   bindEvents() {
     this.dropzone.on("addedfile", file =>
-      setTimeout(() => this.onFileAdded(file), 500)
+      setTimeout(() => this.handleFileAdded(file), 500)
     );
     this.dropzone.on(
       "removedfile",
@@ -47,6 +47,22 @@ class DropzoneController extends Controller {
       "uploadprogress",
       (file, progress) => this.handleFileProgress(file, progress)
     );
+  }
+
+  handleFileAdded(file) {
+    if (file.accepted) {
+      if (this.fileAddedEvent) {
+        const event = new CustomEvent(this.fileAddedEvent, {
+          detail: { file: file }
+        });
+        window.dispatchEvent(event);
+      }
+
+      setTimeout(() => {
+        const controller = new DirectUploadController(this, file);
+        controller.start();
+      }, 3500);
+    }
   }
 
   handleFileDropped(event) {
@@ -80,13 +96,6 @@ class DropzoneController extends Controller {
     if (this.queueCompleteEvent) {
       const event = new CustomEvent(this.queueCompleteEvent);
       window.dispatchEvent(event);
-    }
-  }
-
-  onFileAdded(file) {
-    if (file.accepted) {
-      const controller = new DirectUploadController(this, file);
-      controller.start();
     }
   }
 
@@ -158,6 +167,10 @@ class DropzoneController extends Controller {
 
   get maxFileSize() {
     return this.data.get("max-file-size") || null;
+  }
+
+  get fileAddedEvent() {
+    return this.data.get("file-added-event");
   }
 
   get fileDropEvent() {
