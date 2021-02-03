@@ -38,7 +38,7 @@ class DropzoneController extends Controller {
     );
     this.dropzone.on(
       "canceled",
-      file => file.controller && file.controller.xhr.abort()
+      file => this.handleFileCanceled(file)
     );
     this.dropzone.on("success", file => this.handleFileSuccess(file));
     this.dropzone.on("queuecomplete", () => this.handleQueueComplete());
@@ -51,12 +51,7 @@ class DropzoneController extends Controller {
 
   handleFileAdded(file) {
     if (file.accepted) {
-      if (this.fileAddedEvent) {
-        const event = new CustomEvent(this.fileAddedEvent, {
-          detail: { file: file }
-        });
-        window.dispatchEvent(event);
-      }
+      this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
 
       setTimeout(() => {
         const controller = new DirectUploadController(this, file);
@@ -65,38 +60,28 @@ class DropzoneController extends Controller {
     }
   }
 
-  handleFileDropped(event) {
-    if (this.fileDropEvent) {
-      const newEvent = new CustomEvent(this.fileDropEvent, {
-        dataTransfer: event
-      });
-      window.dispatchEvent(newEvent);
+  handleFileCanceled(file) {
+    if (file.controller) {
+      file.controller.xhr.abort();
+
+      this.dispatchEvent(this.fileCanceledEvent, { detail: { file: file }});
     }
+  }
+
+  handleFileDropped(event) {
+    this.dispatchEvent(this.fileDropEvent, { dataTransfer: event });
   }
 
   handleFileSuccess(file) {
-    if (this.fileSuccessEvent) {
-      const event = new CustomEvent(this.fileSuccessEvent, {
-        detail: { file: file }
-      });
-      window.dispatchEvent(event);
-    }
+    this.dispatchEvent(this.fileSuccessEvent, { detail: { file: file }});
   }
 
   handleFileProgress(file, progress) {
-    if (this.fileProgressEvent) {
-      const event = new CustomEvent(this.fileProgressEvent, {
-        detail: { file: file, progress: progress }
-      });
-      window.dispatchEvent(event);
-    }
+    this.dispatchEvent(this.fileProgressEvent, { detail: { file: file, progress: progress }});
   }
 
   handleQueueComplete() {
-    if (this.queueCompleteEvent) {
-      const event = new CustomEvent(this.queueCompleteEvent);
-      window.dispatchEvent(event);
-    }
+    this.dispatchEvent(this.queueCompleteEvent);
   }
 
   handleFileDropDragEnter() {
@@ -147,6 +132,13 @@ class DropzoneController extends Controller {
     }
   }
 
+  dispatchEvent(eventName, info=null) {
+    if (eventName) {
+      const event = new CustomEvent(eventName, info);
+      window.dispatchEvent(event);
+    }
+  }
+
   get headers() {
     return {
       "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
@@ -185,6 +177,10 @@ class DropzoneController extends Controller {
     return this.data.get("file-progress-event");
   }
 
+  get fileCanceledEvent() {
+    return this.data.get("file-canceled-event");
+  }
+
   get queueCompleteEvent() {
     return this.data.get("queue-complete-event");
   }
@@ -203,10 +199,10 @@ class DirectUploadController {
     this.directUpload = new DirectUpload(file, controller.url, this);
     this.controller = controller;
     this.file = file;
+    this.file.controller = this;
   }
 
   start() {
-    this.file.controller = this;
     this.hiddenInput = this.createHiddenInput();
     this.directUpload.create((error, attributes) => {
       if (error) {
@@ -220,15 +216,23 @@ class DirectUploadController {
     });
   }
 
+  cancel() {
+    this.controller.dropzone.removeFile(this.file);
+  }
+
   directUploadWillStoreFileWithXHR(xhr) {
     this.bindProgressEvent(xhr);
     this.emitDropzoneUploading();
   }
 
   bindProgressEvent(xhr) {
+    const file = this.file;
+
     this.xhr = xhr;
     this.xhr.upload.addEventListener("progress", event => {
       const progress = parseFloat(event.loaded / event.total) * 100;
+      file.upload.bytesSent = event.loaded;
+      file.upload.progress = progress;
       this.emitDropzoneProgress(progress);
       this.uploadRequestDidProgress(progress);
     });
