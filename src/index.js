@@ -53,10 +53,8 @@ class DropzoneController extends Controller {
     if (file.accepted) {
       this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
 
-      setTimeout(() => {
-        const controller = new DirectUploadController(this, file);
-        controller.start();
-      }, 3500);
+      const controller = new DirectUploadController(this, file);
+      controller.start();
     }
   }
 
