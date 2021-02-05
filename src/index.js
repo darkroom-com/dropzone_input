@@ -215,6 +215,10 @@ class DirectUploadController {
     this.controller.dropzone.removeFile(this.file);
   }
 
+  cancelAll() {
+    this.controller.dropzone.removeAllFiles(true);
+  }
+
   directUploadWillStoreFileWithXHR(xhr) {
     this.bindProgressEvent(xhr);
     this.emitDropzoneUploading();
