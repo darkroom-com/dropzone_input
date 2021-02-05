@@ -34,11 +34,7 @@ class DropzoneController extends Controller {
     );
     this.dropzone.on(
       "removedfile",
-      file => file.controller && file.controller.removeHiddenInput()
-    );
-    this.dropzone.on(
-      "canceled",
-      file => this.handleFileCanceled(file)
+      file => this.handleFileRemoved(file)
     );
     this.dropzone.on("success", file => this.handleFileSuccess(file));
     this.dropzone.on("queuecomplete", () => this.handleQueueComplete());
@@ -58,14 +54,6 @@ class DropzoneController extends Controller {
     }
   }
 
-  handleFileCanceled(file) {
-    if (file.controller) {
-      file.controller.xhr.abort();
-
-      this.dispatchEvent(this.fileCanceledEvent, { detail: { file: file }});
-    }
-  }
-
   handleFileDropped(event) {
     this.dispatchEvent(this.fileDropEvent, { dataTransfer: event });
   }
@@ -76,6 +64,15 @@ class DropzoneController extends Controller {
 
   handleFileProgress(file, progress) {
     this.dispatchEvent(this.fileProgressEvent, { detail: { file: file, progress: progress }});
+  }
+
+  handleFileRemoved(file) {
+    if (file.controller) {
+      file.controller.xhr.abort();
+      file.controller.removeHiddenInput();
+
+      this.dispatchEvent(this.fileRemovedEvent, { detail: { file: file }});
+    }
   }
 
   handleQueueComplete() {
@@ -175,8 +172,8 @@ class DropzoneController extends Controller {
     return this.data.get("file-progress-event");
   }
 
-  get fileCanceledEvent() {
-    return this.data.get("file-canceled-event");
+  get fileRemovedEvent() {
+    return this.data.get("file-removed-event");
   }
 
   get queueCompleteEvent() {
