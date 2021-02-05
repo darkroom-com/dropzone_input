@@ -15,6 +15,8 @@ module DropzoneInput
       %i(
         max_files
         max_file_size
+        file_added_event
+        file_removed_event
         file_drop_event
         file_progress_event
         file_success_event
