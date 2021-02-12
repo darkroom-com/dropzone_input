@@ -166,7 +166,6 @@ class DropzoneController extends Controller {
   }
 
   runUploadQueue() {
-    console.log("runUploadQueue", this.uploadsInProgress)
     this.queue.forEach((controller, index, queue) => {
       if (this.uploadsInProgress < this.parallelUploads) {
         controller.start();
