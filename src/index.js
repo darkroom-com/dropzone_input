@@ -54,6 +54,11 @@ class DropzoneController extends Controller {
 
   handleFileAdded(file) {
     if (file.accepted) {
+      if (this.fileExists(file)) {
+        this.dropzone.removeFile(file);
+        return;
+      }
+
       this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
 
       const controller = new DirectUploadController(this, file);
@@ -148,6 +153,11 @@ class DropzoneController extends Controller {
       const event = new CustomEvent(eventName, info);
       window.dispatchEvent(event);
     }
+  }
+
+  fileExists(theFile) {
+    const files = this.dropzone.files.filter(file => (file.name == theFile.name && file.size == theFile.size));
+    return files.length > 1;
   }
 
   removeFromQueue(file) {
