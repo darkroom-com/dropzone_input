@@ -2,6 +2,8 @@ import { Controller } from "stimulus";
 import { DirectUpload } from "@rails/activestorage";
 import Dropzone from "dropzone";
 
+const DEFAULT_PARALLEL_UPLOADS = 2;
+
 Dropzone.autoDiscover = false;
 
 class DropzoneController extends Controller {
@@ -9,6 +11,8 @@ class DropzoneController extends Controller {
 
   connect() {
     if (this.dropzone === undefined) {
+      this.queue = [];
+      this.uploadsInProgress = 0;
       this.dropzone = new Dropzone(this.element, {
         url: this.url,
         headers: this.headers,
@@ -16,7 +20,7 @@ class DropzoneController extends Controller {
         maxFiles: this.maxFiles,
         maxFilesize: this.maxFileSize,
         autoQueue: false,
-        parallelUploads: 2
+        parallelUploads: this.parallelUploads
       });
 
       this.bindEvents();
@@ -53,7 +57,8 @@ class DropzoneController extends Controller {
       this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
 
       const controller = new DirectUploadController(this, file);
-      controller.start();
+      this.queue.push(controller);
+      this.runUploadQueue();
     }
   }
 
@@ -63,6 +68,8 @@ class DropzoneController extends Controller {
 
   handleFileSuccess(file) {
     this.dispatchEvent(this.fileSuccessEvent, { detail: { file: file }});
+    this.uploadsInProgress--;
+    this.runUploadQueue();
   }
 
   handleFileProgress(file, progress) {
@@ -71,10 +78,16 @@ class DropzoneController extends Controller {
 
   handleFileRemoved(file) {
     if (file.controller) {
-      file.controller.xhr.abort();
+      if (file.controller.xhr) {
+        file.controller.xhr.abort();
+        this.uploadsInProgress--;
+      }
+
       file.controller.removeHiddenInput();
 
       this.dispatchEvent(this.fileRemovedEvent, { detail: { file: file }});
+      this.removeFromQueue(file);
+      this.runUploadQueue();
     }
   }
 
@@ -137,6 +150,21 @@ class DropzoneController extends Controller {
     }
   }
 
+  removeFromQueue(file) {
+    this.queue = this.queue.filter(controller => (controller.file.upload.uuid !== file.upload.uuid));
+  }
+
+  runUploadQueue() {
+    console.log("runUploadQueue", this.uploadsInProgress)
+    this.queue.forEach((controller, index, queue) => {
+      if (this.uploadsInProgress < this.parallelUploads) {
+        controller.start();
+        queue.splice(index, 1);
+        this.uploadsInProgress++;
+      }
+    });
+  }
+
   get headers() {
     return {
       "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
@@ -189,6 +217,10 @@ class DropzoneController extends Controller {
 
   get fileDropOverId() {
     return this.data.get("file-drop-over-id") || null;
+  }
+
+  get parallelUploads() {
+    return this.data.get("parallel-uploads") || DEFAULT_PARALLEL_UPLOADS;
   }
 }
 
