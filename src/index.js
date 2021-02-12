@@ -86,12 +86,13 @@ class DropzoneController extends Controller {
       if (file.controller.xhr) {
         file.controller.xhr.abort();
         this.uploadsInProgress--;
+      } else {
+        this.removeFromQueue(file);
       }
 
       file.controller.removeHiddenInput();
 
       this.dispatchEvent(this.fileRemovedEvent, { detail: { file: file }});
-      this.removeFromQueue(file);
       this.runUploadQueue();
     }
   }
