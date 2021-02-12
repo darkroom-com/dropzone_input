@@ -8,18 +8,21 @@ class DropzoneController extends Controller {
   static targets = ["input"];
 
   connect() {
-    this.dropzone = new Dropzone(this.element, {
-      url: this.url,
-      headers: this.headers,
-      acceptedFiles: this.acceptedFiles,
-      maxFiles: this.maxFiles,
-      maxFilesize: this.maxFileSize,
-      autoQueue: false,
-      parallelUploads: 2
-    });
+    if (this.dropzone === undefined) {
+      this.dropzone = new Dropzone(this.element, {
+        url: this.url,
+        headers: this.headers,
+        acceptedFiles: this.acceptedFiles,
+        maxFiles: this.maxFiles,
+        maxFilesize: this.maxFileSize,
+        autoQueue: false,
+        parallelUploads: 2
+      });
+
+      this.bindEvents();
+    }
 
     this.hideFileInput();
-    this.bindEvents();
     this.bindFileDrop();
   }
 
