@@ -15,6 +15,24 @@ A Rails helper and Stimulus Controller that makes adding dropzone to a Rails for
 specific styles, etc) will be non-configurable at the moment. We will work to generalize this over
 time and *pull requests are welcome* and will be reviewed quickly.
 
+## Options & Events
+
+| Option Name | Description |
+| -- | -- |
+| max_files | default: `null` |
+| max_file_size | default: `null` |
+| parallel_uploads | default: `2` |
+
+Events below receive `file` as first parameter.
+
+| Event Name | Description |
+| -- | -- |
+| file_added_event | File added to queue |
+| file_progress_event | Periodically called while file is being uploaded. `progress` in the second parameter, or through the `upload` property: `file.upload.progress`, `file.upload.bytesSent` |
+| file_removed_event | File removed from queue |
+| file_start_event | File will start uploading |
+| file_success_event | File successfully uploaded |
+
 ## Installation
 
 Add to your Gemfile.
