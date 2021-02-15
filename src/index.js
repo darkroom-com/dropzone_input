@@ -168,6 +168,7 @@ class DropzoneController extends Controller {
   runUploadQueue() {
     this.queue.forEach((controller, index, queue) => {
       if (this.uploadsInProgress < this.parallelUploads) {
+        this.dispatchEvent(this.fileStartEvent, { detail: { file: controller.file }});
         controller.start();
         queue.splice(index, 1);
         this.uploadsInProgress++;
@@ -203,6 +204,10 @@ class DropzoneController extends Controller {
 
   get fileDropEvent() {
     return this.data.get("file-drop-event");
+  }
+
+  get fileStartEvent() {
+    return this.data.get("file-start-event");
   }
 
   get fileSuccessEvent() {

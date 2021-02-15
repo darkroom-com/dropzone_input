@@ -21,6 +21,7 @@ module DropzoneInput
         file_drop_over_id
         file_progress_event
         file_removed_event
+        file_start_event
         file_success_event
         parallel_uploads
         queue_complete_event
