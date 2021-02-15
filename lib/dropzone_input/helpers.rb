@@ -16,13 +16,15 @@ module DropzoneInput
         max_files
         max_file_size
         file_added_event
-        file_removed_event
         file_drop_event
-        file_progress_event
-        file_success_event
-        queue_complete_event
         file_drop_id
         file_drop_over_id
+        file_progress_event
+        file_removed_event
+        file_start_event
+        file_success_event
+        parallel_uploads
+        queue_complete_event
       ).each do |key|
         data["dropzone_#{key}".to_sym] = options.delete(key) if options.key?(key)
       end
