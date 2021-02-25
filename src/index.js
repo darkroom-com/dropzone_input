@@ -3,6 +3,7 @@ import { DirectUpload } from "@rails/activestorage";
 import Dropzone from "dropzone";
 
 const DEFAULT_PARALLEL_UPLOADS = 2;
+const DEFAULT_MAX_THUMBNAIL_FILE_SIZE = 10;
 
 Dropzone.autoDiscover = false;
 
@@ -20,7 +21,8 @@ class DropzoneController extends Controller {
         maxFiles: this.maxFiles,
         maxFilesize: this.maxFileSize,
         autoQueue: false,
-        parallelUploads: this.parallelUploads
+        parallelUploads: this.parallelUploads,
+        maxThumbnailFilesize: this.maxThumbnailFileSize
       });
 
       this.bindEvents();
@@ -236,6 +238,10 @@ class DropzoneController extends Controller {
 
   get parallelUploads() {
     return this.data.get("parallel-uploads") || DEFAULT_PARALLEL_UPLOADS;
+  }
+
+  get maxThumbnailFileSize() {
+    return this.data.get("max-thumbnail-file-size") || DEFAULT_MAX_THUMBNAIL_FILE_SIZE;
   }
 }
 
