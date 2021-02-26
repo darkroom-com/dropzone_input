@@ -21,6 +21,7 @@ time and *pull requests are welcome* and will be reviewed quickly.
 | -- | -- |
 | `max_files` | default: `null` |
 | `max_file_size` | default: `null` |
+| `max_thumbnail_file_size` | default: `10` |
 | `parallel_uploads` | default: `2` |
 
 Events below receive `file` as first parameter.
