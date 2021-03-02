@@ -1,6 +1,7 @@
 import { Controller } from "stimulus";
 import { DirectUpload } from "@rails/activestorage";
 import Dropzone from "dropzone";
+import { tiffToPNG } from "./tiff";
 
 const DEFAULT_PARALLEL_UPLOADS = 2;
 const DEFAULT_MAX_THUMBNAIL_FILE_SIZE = 10;
@@ -54,6 +55,14 @@ class DropzoneController extends Controller {
     );
   }
 
+  fileAdded(file) {
+    this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
+
+    const controller = new DirectUploadController(this, file);
+    this.queue.push(controller);
+    this.runUploadQueue();
+  }
+
   handleFileAdded(file) {
     if (file.accepted) {
       if (this.fileExists(file)) {
@@ -61,11 +70,12 @@ class DropzoneController extends Controller {
         return;
       }
 
-      this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
-
-      const controller = new DirectUploadController(this, file);
-      this.queue.push(controller);
-      this.runUploadQueue();
+      const isTiff = file.type === "image/tiff";
+      if (isTiff) {
+        this.createTiffThumbnail(file, file => this.fileAdded(file));
+      } else {
+        this.fileAdded(file);
+      }
     }
   }
 
@@ -113,6 +123,33 @@ class DropzoneController extends Controller {
     if (this.fileDropOver) {
       this.fileDropOver.classList.add("hidden");
     }
+  }
+
+  createTiffThumbnail(file, callback) {
+    const self = this;
+
+    tiffToPNG(file, (dataURL) => {
+      const img = document.createElement("img");
+      img.onload = () => {
+        const fileObj = { width: img.width, height: img.height, dataURL: dataURL };
+
+        self.dropzone.createThumbnailFromUrl(
+          fileObj,
+          self.dropzone.options.thumbnailWidth,
+          self.dropzone.options.thumbnailHeight,
+          self.dropzone.options.thumbnailMethod,
+          true,
+          (thumbnail) => {
+            self.dropzone.emit("thumbnail", file, thumbnail);
+
+            if (callback != null) {
+              callback(file);
+            }
+          }
+        );
+      };
+      img.src = dataURL;
+    });
   }
 
   resetDragCounter() {
