@@ -70,8 +70,7 @@ class DropzoneController extends Controller {
         return;
       }
 
-      const isTiff = file.type === "image/tiff";
-      if (isTiff) {
+      if (file.type === "image/tiff") {
         this.createTiffThumbnail(file, file => this.fileAdded(file));
       } else {
         this.fileAdded(file);
