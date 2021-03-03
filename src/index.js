@@ -125,21 +125,19 @@ class DropzoneController extends Controller {
   }
 
   createTiffThumbnail(file, callback) {
-    const self = this;
-
     tiffToPNG(file, (dataURL) => {
       const img = document.createElement("img");
       img.onload = () => {
         const fileObj = { width: img.width, height: img.height, dataURL: dataURL };
 
-        self.dropzone.createThumbnailFromUrl(
+        this.dropzone.createThumbnailFromUrl(
           fileObj,
-          self.dropzone.options.thumbnailWidth,
-          self.dropzone.options.thumbnailHeight,
-          self.dropzone.options.thumbnailMethod,
+          this.dropzone.options.thumbnailWidth,
+          this.dropzone.options.thumbnailHeight,
+          this.dropzone.options.thumbnailMethod,
           true,
           (thumbnail) => {
-            self.dropzone.emit("thumbnail", file, thumbnail);
+            this.dropzone.emit("thumbnail", file, thumbnail);
 
             if (callback != null) {
               callback(file);
