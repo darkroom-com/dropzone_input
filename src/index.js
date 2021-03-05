@@ -1,6 +1,7 @@
 import { Controller } from "stimulus";
 import { DirectUpload } from "@rails/activestorage";
 import Dropzone from "dropzone";
+import { tiffToPNG } from "./tiff";
 
 const DEFAULT_PARALLEL_UPLOADS = 2;
 const DEFAULT_MAX_THUMBNAIL_FILE_SIZE = 10;
@@ -54,6 +55,14 @@ class DropzoneController extends Controller {
     );
   }
 
+  fileAdded(file) {
+    this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
+
+    const controller = new DirectUploadController(this, file);
+    this.queue.push(controller);
+    this.runUploadQueue();
+  }
+
   handleFileAdded(file) {
     if (file.accepted) {
       if (this.fileExists(file)) {
@@ -61,11 +70,11 @@ class DropzoneController extends Controller {
         return;
       }
 
-      this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
-
-      const controller = new DirectUploadController(this, file);
-      this.queue.push(controller);
-      this.runUploadQueue();
+      if (file.type === "image/tiff") {
+        this.createTiffThumbnail(file, file => this.fileAdded(file));
+      } else {
+        this.fileAdded(file);
+      }
     }
   }
 
@@ -113,6 +122,31 @@ class DropzoneController extends Controller {
     if (this.fileDropOver) {
       this.fileDropOver.classList.add("hidden");
     }
+  }
+
+  createTiffThumbnail(file, callback) {
+    tiffToPNG(file, (dataURL) => {
+      const img = document.createElement("img");
+      img.onload = () => {
+        const fileObj = { width: img.width, height: img.height, dataURL: dataURL };
+
+        this.dropzone.createThumbnailFromUrl(
+          fileObj,
+          this.dropzone.options.thumbnailWidth,
+          this.dropzone.options.thumbnailHeight,
+          this.dropzone.options.thumbnailMethod,
+          true,
+          (thumbnail) => {
+            this.dropzone.emit("thumbnail", file, thumbnail);
+
+            if (callback != null) {
+              callback(file);
+            }
+          }
+        );
+      };
+      img.src = dataURL;
+    });
   }
 
   resetDragCounter() {

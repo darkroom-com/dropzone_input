@@ -8,7 +8,7 @@ const name = pkg.name;
 
 export default {
   input: "src/index.js",
-  external: ["stimulus", "dropzone", "@rails/activestorage"],
+  external: ["stimulus", "dropzone", "@rails/activestorage", "utif"],
   output: [
     {
       file: "dist/index.js",
