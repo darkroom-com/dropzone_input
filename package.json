@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/darkroom-com/dropzone_input#readme",
   "dependencies": {
+    "cropperjs": "^1.5.11",
     "utif": "^3.1.0"
   },
   "devDependencies": {

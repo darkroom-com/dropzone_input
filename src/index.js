@@ -1,10 +1,13 @@
 import { Controller } from "stimulus";
 import { DirectUpload } from "@rails/activestorage";
 import Dropzone from "dropzone";
+import Cropper from 'cropperjs';
 import { tiffToPNG } from "./tiff";
 
 const DEFAULT_PARALLEL_UPLOADS = 2;
 const DEFAULT_MAX_THUMBNAIL_FILE_SIZE = 10;
+const DEFAULT_THUMBNAIL_HEIGHT = 120;
+const DEFAULT_THUMBNAIL_WIDTH = 120;
 
 Dropzone.autoDiscover = false;
 
@@ -13,9 +16,7 @@ class DropzoneController extends Controller {
 
   connect() {
     if (this.dropzone === undefined) {
-      this.queue = [];
-      this.uploadsInProgress = 0;
-      this.dropzone = new Dropzone(this.element, {
+      const config = {
         url: this.url,
         headers: this.headers,
         acceptedFiles: this.acceptedFiles,
@@ -23,9 +24,19 @@ class DropzoneController extends Controller {
         maxFilesize: this.maxFileSize,
         autoQueue: false,
         parallelUploads: this.parallelUploads,
-        maxThumbnailFilesize: this.maxThumbnailFileSize
-      });
+        maxThumbnailFilesize: this.maxThumbnailFileSize,
+        thumbnailWidth: this.thumbnailWidth,
+        thumbnailHeight: this.thumbnailHeight,
+      }
 
+      const previewTemplateElement =this.element.querySelector('template#preview');
+      if (previewTemplateElement) {
+        config.previewTemplate = previewTemplateElement.innerHTML;
+      }
+
+      this.queue = [];
+      this.uploadsInProgress = 0;
+      this.dropzone = new Dropzone(this.element, config);
       this.bindEvents();
     }
 
@@ -53,9 +64,12 @@ class DropzoneController extends Controller {
       "uploadprogress",
       (file, progress) => this.handleFileProgress(file, progress)
     );
+    this.dropzone.on("thumbnail", this.handleThumbnail);
   }
 
   fileAdded(file) {
+    if (this.croppable && !file.cropped) { return; }
+
     this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
 
     const controller = new DirectUploadController(this, file);
@@ -76,6 +90,57 @@ class DropzoneController extends Controller {
         this.fileAdded(file);
       }
     }
+  }
+
+  handleThumbnail = (file) => {
+    if (!this.croppable || file.cropped) { return; }
+
+    const fileName = file.name;
+    this.dropzone.removeFile(file);
+
+    function dataURItoBlob(dataURI) {
+      var byteString = atob(dataURI.split(',')[1]);
+      var ab = new ArrayBuffer(byteString.length);
+      var ia = new Uint8Array(ab);
+      for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: 'image/jpeg' });
+    }
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const container = this.element.querySelector('.dz-message');
+      container.remove();
+      const div = document.createElement('div');
+      const button = document.createElement('a');
+      button.innerText = 'Save crop';
+      button.href = '#';
+      button.classList.add('bg-blue-500', 'rounded-b', 'px-4', 'py-2', 'absolute', 'inset-x-0', 'text-center')
+      const img = document.createElement('img');
+      img.src = reader.result;
+      div.appendChild(img);
+      div.appendChild(button);
+      this.element.appendChild(div);
+
+      const cropper = new Cropper(img, {
+        aspectRatio: 1
+      });
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        const blob = cropper.getCroppedCanvas().toDataURL();
+        const newFile = dataURItoBlob(blob);
+        newFile.cropped = true;
+        newFile.name = fileName;
+        cropper.destroy();
+        div.remove();
+
+        this.dropzone.addFile(newFile);
+      });
+    }
+    reader.readAsDataURL(file);
   }
 
   handleFileDropped(event) {
@@ -277,6 +342,18 @@ class DropzoneController extends Controller {
   get maxThumbnailFileSize() {
     return this.data.get("max-thumbnail-file-size") || DEFAULT_MAX_THUMBNAIL_FILE_SIZE;
   }
+
+  get thumbnailHeight() {
+    return this.data.get('thumbnail-height') || DEFAULT_THUMBNAIL_HEIGHT;
+  }
+
+  get thumbnailWidth() {
+    return this.data.get('thumbnail-width') || DEFAULT_THUMBNAIL_WIDTH;
+  }
+
+  get croppable() {
+    return this.data.get('croppable') === 'true';
+  }
 }
 
 class DirectUploadController {
@@ -328,9 +405,11 @@ class DirectUploadController {
   }
 
   uploadRequestDidProgress(progress) {
-    this.file.previewTemplate.querySelector(
-      ".dz-upload"
-    ).style.width = `${progress}%`;
+    const progressElement = this.file.previewTemplate.querySelector(".dz-upload");
+
+    if (!progressElement) { return; }
+
+    progressElement.style.width = `${progress}%`;
   }
 
   createHiddenInput() {
