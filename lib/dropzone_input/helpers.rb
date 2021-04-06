@@ -10,7 +10,7 @@ module DropzoneInput
 
       data = {
         controller: 'dropzone',
-        dropzone_accepted_files: ActiveStorage.variable_content_types.join(',')
+        dropzone_accepted_files: options.delete(:accepted_files) || ActiveStorage.variable_content_types.join(',')
       }
       %i(
         croppable
