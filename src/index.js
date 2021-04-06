@@ -45,7 +45,6 @@ class DropzoneController extends Controller {
   }
 
   hideFileInput() {
-    this.inputTarget.disabled = true;
     this.inputTarget.classList.add("hidden");
   }
 
