@@ -278,8 +278,13 @@ class DropzoneController extends Controller {
 
   get headers() {
     return {
-      "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      "X-CSRF-Token": this.csrfToken
     };
+  }
+
+  get csrfToken() {
+    const token = document.querySelector('meta[name="csrf-token"]');
+    return token ? token.content : null;
   }
 
   get url() {
