@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.4] - 2021-12-27
+- Support for rails 7
+
 ## [2.0.3] - 2021-04-06
 - Update to Stimulus 3.0.1 (breaking change)
 
