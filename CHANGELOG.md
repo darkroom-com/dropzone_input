@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.5] - 2022-01-04
+- Support for activestorage 7
+- Probably breaking for < rails 7
+
 ## [2.0.4] - 2021-12-27
 - Support for rails 7
 

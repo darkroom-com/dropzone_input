@@ -71,7 +71,7 @@ class DropzoneController extends Controller {
 
     this.dispatchEvent(this.fileAddedEvent, { detail: { file: file }});
 
-    const controller = new DirectUploadController(this, file);
+    const controller = new DirectUploadController(this, file, this.inputTarget);
     this.queue.push(controller);
     this.runUploadQueue();
   }
@@ -361,8 +361,12 @@ class DropzoneController extends Controller {
 }
 
 class DirectUploadController {
-  constructor(controller, file) {
-    this.directUpload = new DirectUpload(file, controller.url, this);
+  constructor(controller, file, input) {
+    const url = input.dataset.directUploadUrl
+    const token = input.dataset.directUploadToken
+    const attachmentName = input.dataset.directUploadAttachmentName
+
+    this.directUpload = new DirectUpload(file, url, token, attachmentName);
     this.controller = controller;
     this.file = file;
     this.file.controller = this;
