@@ -1,6 +1,6 @@
 {
   "name": "@darkroom-com/dropzone-input",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "A stimulus.js based controller to add dropzone support to Rails forms",
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",
@@ -37,7 +37,7 @@
     "@babel/plugin-transform-classes": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
     "@babel/register": "^7.10.4",
-    "@rails/activestorage": "^6.0.0",
+    "@rails/activestorage": "^7.0.0",
     "babel-eslint": "^10.1.0",
     "dropzone": "^5.7.2",
     "eslint": "^7.4.0",
@@ -47,7 +47,7 @@
     "rollup-plugin-node-resolve": "^5.2.0"
   },
   "peerDependencies": {
-    "@rails/activestorage": "^6.0.0",
+    "@rails/activestorage": "^7.0.0",
     "dropzone": "^5.5.1"
   },
   "publishConfig": {
